@@ -1,2 +1,2 @@
-# opencv-cascade-annotator
-A simple tool to annotate positive images and create negatives.
+# OpenCV Sample Annotator
+A simple tool to create positive and negative samples for cascade classifiers.
