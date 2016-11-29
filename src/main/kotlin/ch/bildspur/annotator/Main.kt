@@ -21,6 +21,7 @@ class Main : Application() {
         val root = loader.load<Parent>(javaClass.classLoader.getResourceAsStream("view/MainView.fxml"))
 
         val controller = loader.getController<MainViewController>()
+        controller.stage = primaryStage
         primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWN) { controller.handleWindowShownEvent() }
 
         primaryStage.title = "OpenCV Sample Annotator"

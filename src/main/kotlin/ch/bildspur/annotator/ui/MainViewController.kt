@@ -1,5 +1,6 @@
 package ch.bildspur.annotator.ui
 
+import ch.bildspur.annotator.model.AnnotationImage
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -19,10 +20,13 @@ class MainViewController {
 
     var positivesFile: File by Delegates.notNull()
 
-    var datasetFiles: List<File> by Delegates.notNull()
+    var annotationImages: List<AnnotationImage> by Delegates.notNull()
 
-    init {
-    }
+    var activeImage: AnnotationImage by Delegates.notNull()
+
+    var imageIterator: Iterator<AnnotationImage> by Delegates.notNull()
+
+    var stage: Stage by Delegates.notNull()
 
     fun handleWindowShownEvent() {
         showSettingsView()
@@ -43,6 +47,21 @@ class MainViewController {
             stage.close()
 
         positivesFile = controller.positivesFile!!
-        datasetFiles = controller.datasetFiles!!
+        annotationImages = controller.datasetFiles!!.map(::AnnotationImage)
+        imageIterator = annotationImages.iterator()
+
+        loadNextImage()
+    }
+
+    fun loadNextImage() {
+        if (!imageIterator.hasNext())
+            saveAndClose()
+
+        activeImage = imageIterator.next()
+        imageView!!.image = activeImage.image
+    }
+
+    fun saveAndClose() {
+        stage.close()
     }
 }
