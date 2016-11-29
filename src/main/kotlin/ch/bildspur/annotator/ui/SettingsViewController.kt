@@ -41,10 +41,12 @@ class SettingsViewController {
                 FileChooser.ExtensionFilter("PNG", "*.png")
         )
 
-        datasetFiles = fileChooser.showOpenMultipleDialog(stage)
+        val result = fileChooser.showOpenMultipleDialog(stage)
 
-        if (datasetFiles != null)
+        if (result != null) {
+            datasetFiles = result
             datasetPathField!!.text = datasetFiles!!.joinToString { it.name }
+        }
     }
 
     fun selectPositives(e: ActionEvent) {
@@ -54,10 +56,12 @@ class SettingsViewController {
         fileChooser.title = "Select file to save positives to:"
         fileChooser.initialFileName = "positives.txt"
         fileChooser.initialDirectory = File(System.getProperty("user.home"))
-        positivesFile = fileChooser.showSaveDialog(stage)
+        val result = fileChooser.showSaveDialog(stage)
 
-        if (positivesFile != null)
+        if (result != null) {
+            positivesFile = result
             positivesPathField!!.text = positivesFile!!.absolutePath
+        }
     }
 
     fun startAnnotation(e: ActionEvent) {
