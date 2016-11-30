@@ -23,4 +23,4 @@ floorplan1_fs.jpg 220.30651340996167 287.35632183908046 21.07279693486592 29.693
 ```
 
 ## About
-Developed during the bachelor thesis of Alexander Wyss & Florian Bruggisser.
+Developed during the [bachelor thesis](https://github.com/cansik/architectural-floor-plan) of Alexander Wyss & Florian Bruggisser.
