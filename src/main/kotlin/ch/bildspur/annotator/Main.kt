@@ -17,6 +17,8 @@ class Main : Application() {
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
 
+        //setUserAgentStylesheet(STYLESHEET_CASPIAN)
+
         val loader = FXMLLoader()
         val root = loader.load<Parent>(javaClass.classLoader.getResourceAsStream("view/MainView.fxml"))
 

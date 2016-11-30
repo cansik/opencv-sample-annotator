@@ -1,6 +1,8 @@
 package ch.bildspur.annotator.ui
 
+import ch.bildspur.annotator.geometry.Vector2
 import ch.bildspur.annotator.model.AnnotationImage
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -35,6 +37,8 @@ class MainViewController {
 
     var gc: GraphicsContext by Delegates.notNull()
 
+    var scaleFactor = 1.0
+
     fun handleWindowShownEvent() {
         showSettingsView()
     }
@@ -62,6 +66,8 @@ class MainViewController {
         canvas!!.onMouseDragged = EventHandler<MouseEvent> { handleMouseDragged(it) }
         canvas!!.onMouseClicked = EventHandler<MouseEvent> { handleMouseClicked(it) }
 
+        canvas!!.isFocusTraversable = true
+
         gc = canvas!!.graphicsContext2D
         resizeCanvas()
 
@@ -69,13 +75,13 @@ class MainViewController {
     }
 
     fun loadNextImage() {
-        if (!imageIterator.hasNext())
+        if (!imageIterator.hasNext()) {
             saveAndClose()
+            return
+        }
 
         activeImage = imageIterator.next()
         initImage()
-
-        println("image loaded!")
     }
 
     fun saveAndClose() {
@@ -84,24 +90,41 @@ class MainViewController {
 
     fun resizeCanvas() {
         canvas!!.width = stage.width
-        canvas!!.height = stage.height
+        canvas!!.height = stage.height - 40
     }
 
     fun initImage() {
+        calculateScaleFactor()
+
         gc.clearRect(0.0, 0.0, canvas!!.width, canvas!!.height)
-        gc.drawImage(activeImage.image, 0.0, 0.0)
+        gc.drawImage(activeImage.image, 0.0, 0.0,
+                activeImage.image.width * scaleFactor,
+                activeImage.image.height * scaleFactor)
 
         drawInfo()
     }
 
+    fun calculateScaleFactor() {
+        // calculate scale size of image
+        val portrait = activeImage.image.width < activeImage.image.height
+
+        val screenSize = Vector2(canvas!!.width, canvas!!.height)
+        val imageSize = Vector2(activeImage.image.width, activeImage.image.height)
+
+        if (portrait)
+            scaleFactor = screenSize.x / imageSize.x
+        else
+            scaleFactor = screenSize.y / imageSize.y
+    }
+
     fun drawInfo() {
-        
+
     }
 
     fun handleKeyEvent(e: KeyEvent) {
         when (e.code) {
-            KeyCode.SPACE -> loadNextImage()
-            KeyCode.C -> activeImage.polygons.clear()
+            KeyCode.SPACE -> nextClicked(ActionEvent())
+            KeyCode.C -> clearClicked(ActionEvent())
         }
     }
 
@@ -112,4 +135,21 @@ class MainViewController {
     fun handleMouseClicked(e: MouseEvent) {
 
     }
+
+    fun clearClicked(e: ActionEvent) {
+        activeImage.polygons.clear()
+    }
+
+    fun nextClicked(e: ActionEvent) {
+        loadNextImage()
+    }
+
+    fun vectorToScreen(v: Vector2): Vector2 {
+        return v.scale(scaleFactor)
+    }
+
+    fun vectorToImage(v: Vector2): Vector2 {
+        return v.scale(1.0 / scaleFactor)
+    }
+
 }
