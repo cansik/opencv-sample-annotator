@@ -135,7 +135,7 @@ class MainViewController {
             sb.append("$path ${image.polygons.size} ")
             for (polygon in image.polygons) {
                 val rect = getRectData(polygon)
-                sb.append("${rect.x} ${rect.y} ${rect.width} ${rect.height} ")
+                sb.append("${rect.x.toInt()} ${rect.y.toInt()} ${rect.width.toInt()} ${rect.height.toInt()} ")
             }
             sb.appendln()
         }
