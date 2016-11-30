@@ -130,7 +130,9 @@ class MainViewController {
         var sb = StringBuilder()
 
         for (image in annotationImages) {
-            sb.append("${image.file.absolutePath} ")
+            val path = Paths.get(positivesFile.absolutePath).parent.relativize(Paths.get(image.file.absolutePath))
+
+            sb.append("$path ${image.polygons.size} ")
             for (polygon in image.polygons) {
                 val rect = getRectData(polygon)
                 sb.append("${rect.x} ${rect.y} ${rect.width} ${rect.height} ")
