@@ -10,9 +10,11 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
+import javafx.scene.control.Alert
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
+import javafx.scene.paint.Color
 import javafx.stage.Modality
 import javafx.stage.Stage
 import java.io.File
@@ -85,22 +87,23 @@ class MainViewController {
     }
 
     fun saveAndClose() {
+        val alert = Alert(Alert.AlertType.INFORMATION)
+        alert.title = "OpenCV Sample Annotator"
+        alert.headerText = "All images annotated!"
+        alert.contentText = "The data has been saved to: ${positivesFile.name}"
+
+        alert.showAndWait()
+
         stage.close()
     }
 
     fun resizeCanvas() {
         canvas!!.width = stage.width
-        canvas!!.height = stage.height - 40
+        canvas!!.height = stage.height - 100.0
     }
 
     fun initImage() {
         calculateScaleFactor()
-
-        gc.clearRect(0.0, 0.0, canvas!!.width, canvas!!.height)
-        gc.drawImage(activeImage.image, 0.0, 0.0,
-                activeImage.image.width * scaleFactor,
-                activeImage.image.height * scaleFactor)
-
         drawInfo()
     }
 
@@ -118,7 +121,20 @@ class MainViewController {
     }
 
     fun drawInfo() {
+        gc.clearRect(0.0, 0.0, canvas!!.width, canvas!!.height)
+        gc.drawImage(activeImage.image, 0.0, 0.0,
+                activeImage.image.width * scaleFactor,
+                activeImage.image.height * scaleFactor)
 
+        gc.stroke = Color.GREEN
+
+        // draw polygons
+        for (polygon in activeImage.polygons) {
+            gc.strokePolygon(
+                    polygon.points.map { vectorToScreen(it).x }.toDoubleArray(),
+                    polygon.points.map { vectorToScreen(it).y }.toDoubleArray(),
+                    polygon.points.size)
+        }
     }
 
     fun handleKeyEvent(e: KeyEvent) {
@@ -129,11 +145,11 @@ class MainViewController {
     }
 
     fun handleMouseDragged(e: MouseEvent) {
-
+        println("Dragged: ${e.x} | ${e.y}")
     }
 
     fun handleMouseClicked(e: MouseEvent) {
-
+        println("Clicked: ${e.x} | ${e.y}")
     }
 
     fun clearClicked(e: ActionEvent) {
