@@ -13,6 +13,14 @@ class Polygon2() : Serializable {
         this.points.addAll(points)
     }
 
+    operator fun get(i: Int): Vector2 {
+        return points[i]
+    }
+
+    operator fun set(i: Int, v: Vector2) {
+        points[i] = v
+    }
+
     /**
      * PNPoly Method:
      * http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html#The%20C%20Code

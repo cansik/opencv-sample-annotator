@@ -1,5 +1,6 @@
 package ch.bildspur.annotator.ui
 
+import ch.bildspur.annotator.geometry.Polygon2
 import ch.bildspur.annotator.geometry.Vector2
 import ch.bildspur.annotator.model.AnnotationImage
 import javafx.event.ActionEvent
@@ -15,10 +16,13 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
 import javafx.stage.Modality
 import javafx.stage.Stage
 import java.io.File
 import kotlin.properties.Delegates
+import kotlin.system.exitProcess
+
 
 /**
  * Created by cansik on 29.11.16.
@@ -50,14 +54,20 @@ class MainViewController {
         val root = loader.load<Parent>(javaClass.classLoader.getResourceAsStream("view/SettingsView.fxml"))
         val controller = loader.getController<SettingsViewController>()
 
-        val stage = Stage()
-        stage.initModality(Modality.WINDOW_MODAL)
-        stage.title = "OpenCV Sample Annotator Settings"
-        stage.scene = Scene(root)
-        stage.showAndWait()
+        val settingStage = Stage()
+        settingStage.initModality(Modality.WINDOW_MODAL)
+        settingStage.title = "OpenCV Sample Annotator Settings"
+        settingStage.scene = Scene(root)
+        settingStage.showAndWait()
 
-        if (!controller.isStart)
-            stage.close()
+        if (!controller.isStart) {
+            settingStage.close()
+            exitProcess(0)
+        }
+
+        // listeners for stage resize
+        stage.widthProperty().addListener({ observableValue, oldSceneWidth, newSceneWidth -> stageResized() })
+        stage.heightProperty().addListener({ observableValue, oldSceneHeight, newSceneHeight -> stageResized() })
 
         positivesFile = controller.positivesFile!!
         annotationImages = controller.datasetFiles!!.map(::AnnotationImage)
@@ -66,7 +76,8 @@ class MainViewController {
         // setup canvas
         canvas!!.onKeyPressed = EventHandler<KeyEvent> { handleKeyEvent(it) }
         canvas!!.onMouseDragged = EventHandler<MouseEvent> { handleMouseDragged(it) }
-        canvas!!.onMouseClicked = EventHandler<MouseEvent> { handleMouseClicked(it) }
+        canvas!!.onMousePressed = EventHandler<MouseEvent> { handleMousePressed(it) }
+        canvas!!.onMouseReleased = EventHandler<MouseEvent> { handleMouseReleased(it) }
 
         canvas!!.isFocusTraversable = true
 
@@ -76,10 +87,15 @@ class MainViewController {
         loadNextImage()
     }
 
+    fun stageResized() {
+        resizeCanvas()
+        initImage()
+    }
+
     fun loadNextImage() {
         if (!imageIterator.hasNext()) {
             saveAndClose()
-            return
+            exitProcess(0)
         }
 
         activeImage = imageIterator.next()
@@ -104,7 +120,7 @@ class MainViewController {
 
     fun initImage() {
         calculateScaleFactor()
-        drawInfo()
+        redrawCanvas()
     }
 
     fun calculateScaleFactor() {
@@ -120,20 +136,18 @@ class MainViewController {
             scaleFactor = screenSize.y / imageSize.y
     }
 
-    fun drawInfo() {
+    fun redrawCanvas() {
         gc.clearRect(0.0, 0.0, canvas!!.width, canvas!!.height)
         gc.drawImage(activeImage.image, 0.0, 0.0,
                 activeImage.image.width * scaleFactor,
                 activeImage.image.height * scaleFactor)
 
-        gc.stroke = Color.GREEN
+        gc.stroke = Color.LIGHTGREEN
 
         // draw polygons
         for (polygon in activeImage.polygons) {
-            gc.strokePolygon(
-                    polygon.points.map { vectorToScreen(it).x }.toDoubleArray(),
-                    polygon.points.map { vectorToScreen(it).y }.toDoubleArray(),
-                    polygon.points.size)
+            val rect = getRectData(polygon, scaleFactor)
+            gc.strokeRect(rect.x, rect.y, rect.width, rect.height)
         }
     }
 
@@ -144,16 +158,43 @@ class MainViewController {
         }
     }
 
+    var dragged = false
+    var dragStartPoint = Vector2.NULL
+    var activePolygon = Polygon2()
+
     fun handleMouseDragged(e: MouseEvent) {
-        println("Dragged: ${e.x} | ${e.y}")
+        val m = Vector2(e.x, e.y)
+
+        activePolygon.points[1] = vectorToImage(m)
+        dragged = true
+
+        redrawCanvas()
     }
 
-    fun handleMouseClicked(e: MouseEvent) {
-        println("Clicked: ${e.x} | ${e.y}")
+    fun handleMousePressed(e: MouseEvent) {
+        val m = Vector2(e.x, e.y)
+
+        activePolygon = Polygon2(vectorToImage(m), vectorToImage(m))
+        activeImage.polygons.add(activePolygon)
+
+        dragged = false
+        dragStartPoint = m
+    }
+
+    fun handleMouseReleased(e: MouseEvent) {
+        val m = Vector2(e.x, e.y)
+
+        if (dragged) {
+            println("dragged!")
+        } else {
+            activeImage.polygons.remove(activePolygon)
+            println("clicked!")
+        }
     }
 
     fun clearClicked(e: ActionEvent) {
         activeImage.polygons.clear()
+        redrawCanvas()
     }
 
     fun nextClicked(e: ActionEvent) {
@@ -168,4 +209,16 @@ class MainViewController {
         return v.scale(1.0 / scaleFactor)
     }
 
+    fun getRectData(poly: Polygon2, scale: Double = 1.0): Rectangle {
+        val x1 = if (poly[0].x < poly[1].x) poly[0].x else poly[1].x
+        val y1 = if (poly[0].y < poly[1].y) poly[0].y else poly[1].y
+
+        val x2 = if (poly[0].x > poly[1].x) poly[0].x else poly[1].x
+        val y2 = if (poly[0].y > poly[1].y) poly[0].y else poly[1].y
+
+        val width = x2 - x1
+        val height = y2 - y1
+
+        return Rectangle(x1 * scale, y1 * scale, width * scale, height * scale)
+    }
 }
