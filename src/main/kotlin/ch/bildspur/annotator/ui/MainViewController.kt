@@ -21,6 +21,8 @@ import javafx.scene.shape.Rectangle
 import javafx.stage.Modality
 import javafx.stage.Stage
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.properties.Delegates
 import kotlin.system.exitProcess
 
@@ -111,6 +113,8 @@ class MainViewController {
     }
 
     fun saveAndClose() {
+        savePolygonsAsText()
+
         val alert = Alert(Alert.AlertType.INFORMATION)
         alert.title = "OpenCV Sample Annotator"
         alert.headerText = "All images annotated!"
@@ -120,6 +124,21 @@ class MainViewController {
 
         stage.close()
         exitProcess(0)
+    }
+
+    fun savePolygonsAsText() {
+        var sb = StringBuilder()
+
+        for (image in annotationImages) {
+            sb.append("${image.file.absolutePath} ")
+            for (polygon in image.polygons) {
+                val rect = getRectData(polygon)
+                sb.append("${rect.x} ${rect.y} ${rect.width} ${rect.height} ")
+            }
+            sb.appendln()
+        }
+
+        Files.write(Paths.get(positivesFile.absolutePath), sb.toString().toByteArray())
     }
 
     fun resizeCanvas() {

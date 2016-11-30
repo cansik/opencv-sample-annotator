@@ -16,7 +16,7 @@
                 <Button layoutX="75.0" layoutY="7.0" mnemonicParsing="false" onAction="#nextClicked" text="Next"
                         AnchorPane.leftAnchor="75.0"/>
                 <Label fx:id="infoText" alignment="CENTER_RIGHT" layoutX="360.0" layoutY="12.0" prefHeight="17.0"
-                       prefWidth="130.0" text="1 of 1" AnchorPane.rightAnchor="16.0"/>
+                       prefWidth="130.0" text="0 of 0" AnchorPane.rightAnchor="16.0"/>
                 <Button layoutX="132.0" layoutY="7.0" mnemonicParsing="false" onAction="#finishClicked" text="Finish"/>
             </children>
         </AnchorPane>
