@@ -12,6 +12,7 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.control.Alert
+import javafx.scene.control.Label
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
@@ -31,6 +32,9 @@ class MainViewController {
     @FXML
     var canvas: Canvas? = null
 
+    @FXML
+    var infoText: Label? = null
+
     var positivesFile: File by Delegates.notNull()
 
     var annotationImages: List<AnnotationImage> by Delegates.notNull()
@@ -45,6 +49,8 @@ class MainViewController {
 
     var scaleFactor = 1.0
 
+    var imageCounter = 0
+
     fun handleWindowShownEvent() {
         showSettingsView()
     }
@@ -55,6 +61,7 @@ class MainViewController {
         val controller = loader.getController<SettingsViewController>()
 
         val settingStage = Stage()
+        settingStage.initOwner(stage)
         settingStage.initModality(Modality.WINDOW_MODAL)
         settingStage.title = "OpenCV Sample Annotator Settings"
         settingStage.scene = Scene(root)
@@ -80,6 +87,7 @@ class MainViewController {
         canvas!!.onMouseReleased = EventHandler<MouseEvent> { handleMouseReleased(it) }
 
         canvas!!.isFocusTraversable = true
+        canvas!!.requestFocus()
 
         gc = canvas!!.graphicsContext2D
         resizeCanvas()
@@ -93,10 +101,10 @@ class MainViewController {
     }
 
     fun loadNextImage() {
-        if (!imageIterator.hasNext()) {
+        imageCounter++
+
+        if (!imageIterator.hasNext())
             saveAndClose()
-            exitProcess(0)
-        }
 
         activeImage = imageIterator.next()
         initImage()
@@ -111,6 +119,7 @@ class MainViewController {
         alert.showAndWait()
 
         stage.close()
+        exitProcess(0)
     }
 
     fun resizeCanvas() {
@@ -119,6 +128,8 @@ class MainViewController {
     }
 
     fun initImage() {
+        infoText!!.text = "$imageCounter of ${annotationImages.size}"
+
         calculateScaleFactor()
         redrawCanvas()
     }
@@ -182,8 +193,6 @@ class MainViewController {
     }
 
     fun handleMouseReleased(e: MouseEvent) {
-        val m = Vector2(e.x, e.y)
-
         if (dragged) {
             println("dragged!")
         } else {
@@ -199,6 +208,10 @@ class MainViewController {
 
     fun nextClicked(e: ActionEvent) {
         loadNextImage()
+    }
+
+    fun finishClicked(e: ActionEvent) {
+        saveAndClose()
     }
 
     fun vectorToScreen(v: Vector2): Vector2 {

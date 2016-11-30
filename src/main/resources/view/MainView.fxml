@@ -2,20 +2,24 @@
 
 <?import ch.bildspur.annotator.ui.control.ResizableCanvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
             prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ch.bildspur.annotator.ui.MainViewController">
     <children>
-        <ButtonBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="408.0"
-                   style="-fx-background-color: #696969;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="0.0">
-            <buttons>
-                <Button mnemonicParsing="false" onAction="#nextClicked" text="Next"/>
-                <Button mnemonicParsing="false" onAction="#clearClicked" text="Clear"/>
-            </buttons>
-        </ButtonBar>
+        <AnchorPane prefHeight="40.0" prefWidth="408.0" style="-fx-background-color: #ecf0f1;"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Button layoutX="15.0" layoutY="7.0" mnemonicParsing="false" onAction="#clearClicked" text="Clear"
+                        AnchorPane.leftAnchor="15.0"/>
+                <Button layoutX="75.0" layoutY="7.0" mnemonicParsing="false" onAction="#nextClicked" text="Next"
+                        AnchorPane.leftAnchor="75.0"/>
+                <Label fx:id="infoText" alignment="CENTER_RIGHT" layoutX="360.0" layoutY="12.0" prefHeight="17.0"
+                       prefWidth="130.0" text="1 of 1" AnchorPane.rightAnchor="16.0"/>
+                <Button layoutX="132.0" layoutY="7.0" mnemonicParsing="false" onAction="#finishClicked" text="Finish"/>
+            </children>
+        </AnchorPane>
         <ResizableCanvas fx:id="canvas" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                          AnchorPane.rightAnchor="0.0"
                          AnchorPane.topAnchor="40.0"/>

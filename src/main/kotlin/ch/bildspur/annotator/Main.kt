@@ -26,13 +26,15 @@ class Main : Application() {
         controller.stage = primaryStage
         primaryStage.addEventHandler(WindowEvent.WINDOW_SHOWN) { controller.handleWindowShownEvent() }
 
-        primaryStage.title = "OpenCV Sample Annotator"
+        primaryStage.title = "OpenCV Sample Annotator - ${Main.VERSION}"
         primaryStage.scene = Scene(root)
         primaryStage.show()
         System.out.println()
     }
 
     companion object {
+        const val VERSION = "0.1"
+
         @JvmStatic
         fun main(args: Array<String>) {
             launch(Main::class.java)
