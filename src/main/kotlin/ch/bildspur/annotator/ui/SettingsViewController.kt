@@ -34,7 +34,6 @@ class SettingsViewController {
         val fileChooser = FileChooser()
         fileChooser.title = "Select dataset"
         fileChooser.initialFileName = ""
-        fileChooser.initialDirectory = File(System.getProperty("user.home"))
         fileChooser.extensionFilters.addAll(
                 FileChooser.ExtensionFilter("All Images", "*.*"),
                 FileChooser.ExtensionFilter("JPG", "*.jpg"),
@@ -55,7 +54,6 @@ class SettingsViewController {
         val fileChooser = FileChooser()
         fileChooser.title = "Select file to save positives to:"
         fileChooser.initialFileName = "positives.txt"
-        fileChooser.initialDirectory = File(System.getProperty("user.home"))
         val result = fileChooser.showSaveDialog(stage)
 
         if (result != null) {

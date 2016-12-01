@@ -181,12 +181,16 @@ class MainViewController {
             val rect = getRectData(polygon, scaleFactor)
             gc.strokeRect(rect.x, rect.y, rect.width, rect.height)
         }
+
+        canvas!!.requestFocus()
     }
 
     fun handleKeyEvent(e: KeyEvent) {
         when (e.code) {
             KeyCode.SPACE -> nextClicked(ActionEvent())
             KeyCode.C -> clearClicked(ActionEvent())
+            else -> {
+            }
         }
     }
 
