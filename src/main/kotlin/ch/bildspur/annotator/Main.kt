@@ -33,7 +33,7 @@ class Main : Application() {
     }
 
     companion object {
-        const val VERSION = "0.1"
+        const val VERSION = "0.2"
 
         @JvmStatic
         fun main(args: Array<String>) {

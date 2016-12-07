@@ -115,9 +115,12 @@ class MainViewController {
     fun saveAndClose() {
         savePolygonsAsText()
 
+        // sum up
+        val totalSamples = annotationImages.sumBy { it.polygons.size }
+
         val alert = Alert(Alert.AlertType.INFORMATION)
         alert.title = "OpenCV Sample Annotator"
-        alert.headerText = "All images annotated!"
+        alert.headerText = "All images annotated ($totalSamples found)!"
         alert.contentText = "The data has been saved to: ${positivesFile.name}"
 
         alert.showAndWait()
